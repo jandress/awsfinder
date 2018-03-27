@@ -1,6 +1,4 @@
 #search through AWS accounts for a particular host, specified by IP address or instance ID
-#8/2017
-#jandress
 import boto3
 import ConfigParser
 import os
@@ -10,6 +8,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('-a','--address', help='internal or external ip address to search for',required=False)
 parser.add_argument('-i','--instance',help='instance name to search for', required=False)
+parser.add_argument('-n','--name',help='name to search for',required=False)
 args = parser.parse_args()
 
 #put a placeholder in the empty argument so we don't match an empty argument against an empty AWS field later
@@ -60,7 +59,11 @@ for section in config.sections():
 			
 			#evaluate each instance and print the match, if we find it
 			for instance in instances:
-				if (args.address == instance.private_ip_address or args.address == instance.public_ip_address or args.instance == instance.id):
-					print(instance.id, instance.instance_type, instance.key_name, instance.private_ip_address, instance.public_ip_address, instance.public_dns_name ,instance.tags[0].get("Value"))
+				for tags in instance.tags:
+					if tags["Key"] == 'Name':
+						instance_name = tags["Value"]
+				if (args.address == instance.private_ip_address or args.address == instance.public_ip_address or args.instance == instance.id or instance_name == args.name):
 					print("Found it, stopping.")	
+					print(instance.id, instance.instance_type, instance.key_name, instance.private_ip_address, instance.public_ip_address, instance.public_dns_name)
+					print(instance.tags)
 					exit()
