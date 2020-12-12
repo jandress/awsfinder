@@ -12,7 +12,7 @@ parser.add_argument('-n','--name',help='name to search for',required=False)
 #parser.add_argument('-e','--ethernet',help='ethernet interface id to search for',required=False)
 args = parser.parse_args()
 
-#put a placeholder in the empty argument so we don't match an empty argument against an empty AWS field later
+#put a placeholder in the empty argument so we don't match an empty argument against an empty AWS field later 
 if (args.address is None):
         args.address = "foo"
 if (args.instance is None):
